@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "clean": "rm -rf .spago && rm -rf output && rm -rf output-es",
     "postinstall": "spago install && spago build",
     "dev": "vite dev",
     "build": "spago build && vite build"
