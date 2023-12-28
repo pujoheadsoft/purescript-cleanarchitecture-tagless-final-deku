@@ -1,0 +1,4 @@
+package:
+  name: view
+  dependencies:
+  - deku
