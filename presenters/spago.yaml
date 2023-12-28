@@ -1,0 +1,12 @@
+package:
+  name: presenters
+  dependencies:
+    - domains
+    - state
+    - console
+    - effect
+    - prelude
+    - formatters
+  test:
+    main: Test.Presenter.Main
+    dependencies: []

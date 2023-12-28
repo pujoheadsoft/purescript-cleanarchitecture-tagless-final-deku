@@ -1,0 +1,10 @@
+package:
+  name: drivers
+  dependencies:
+    - console
+    - effect
+    - aff
+    - affjax-web
+    - simple-json
+    - prelude
+    - gateways

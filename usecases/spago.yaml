@@ -1,0 +1,13 @@
+package:
+  name: usecases
+  dependencies:
+    - console
+    - effect
+    - prelude
+    - domains
+    - eta-conversion
+  test:
+    main: Test.UseCase.Main
+    dependencies:
+      - spec
+      - pmock
