@@ -1,4 +1,10 @@
 package:
   name: view
   dependencies:
+  - controllers
   - deku
+  - deku-core
+  - deku-dom
+  - web-pointerevents
+  - web-touchevents
+  - stringutils

@@ -458,49 +458,72 @@ workspace:
     view:
       path: view
       dependencies:
+        - controllers
         - deku
+        - deku-core
+        - deku-dom
+        - stringutils
+        - web-pointerevents
+        - web-touchevents
       test_dependencies: []
       build_plan:
         - aff
+        - affjax
+        - affjax-web
+        - ansi
+        - argonaut-core
+        - arraybuffer-types
         - arrays
+        - avar
         - bifunctors
         - bolson
         - catenable-lists
-        - colors
         - console
         - const
         - contravariant
         - control
-        - css
+        - controllers
         - datetime
         - debug
         - deku
+        - deku-core
+        - deku-dom
         - distributive
+        - domains
+        - drivers
         - effect
         - either
         - enums
+        - eta-conversion
         - exceptions
         - exists
         - fast-vect
         - filterable
+        - fixed-points
         - foldable-traversable
         - foreign
         - foreign-object
+        - fork
+        - form-urlencoded
+        - formatters
         - free
         - functions
         - functors
+        - gateways
         - gen
+        - http-methods
         - hyrule
         - identity
         - integers
         - invariant
         - js-date
         - js-timers
+        - js-uri
         - lazy
-        - lcg
         - lists
         - maybe
         - media-types
+        - mmorph
         - newtype
         - nonempty
         - now
@@ -509,33 +532,44 @@ workspace:
         - ordered-collections
         - orders
         - parallel
+        - parsing
         - partial
+        - pipes
+        - pmock
         - prelude
+        - presenters
         - profunctor
-        - quickcheck
-        - quickcheck-laws
-        - random
+        - profunctor-lenses
         - record
         - refs
+        - remotedata
         - safe-coerce
+        - simple-json
+        - spec
         - st
+        - state
         - strings
         - stringutils
         - tailrec
-        - these
         - transformers
         - tuples
         - type-equality
         - typelevel-prelude
         - unfoldable
+        - unicode
         - unsafe-coerce
         - unsafe-reference
+        - usecases
+        - variant
         - web-dom
         - web-events
         - web-file
         - web-html
+        - web-pointerevents
         - web-storage
+        - web-touchevents
         - web-uievents
+        - web-xhr
   package_set:
     address:
       registry: 47.7.0
@@ -1000,7 +1034,40 @@ workspace:
       yoga-postgres: 6.0.0
       yoga-tree: 1.0.0
       z3: 0.0.2
-  extra_packages: {}
+  extra_packages:
+    bolson:
+      git: https://github.com/mikesol/purescript-bolson.git
+      ref: d87900ceedfb81814bd282be464fa4c8a55677c2
+      dependencies:
+        - fast-vect
+        - hyrule
+    deku:
+      git: https://github.com/mikesol/purescript-deku.git
+      ref: 22d4756f831ac57c17286bae86a5799a0377239a
+      subdir: deku
+      dependencies:
+        - bolson
+    deku-core:
+      git: https://github.com/mikesol/purescript-deku.git
+      ref: 22d4756f831ac57c17286bae86a5799a0377239a
+      subdir: deku-core
+      dependencies:
+        - bolson
+    deku-dom:
+      git: https://github.com/mikesol/purescript-deku.git
+      ref: 22d4756f831ac57c17286bae86a5799a0377239a
+      subdir: deku-dom
+      dependencies:
+        - bolson
+    hyrule:
+      git: https://github.com/mikesol/purescript-hyrule.git
+      ref: f388528a9aaa25a5307bf67f6ed12d2097620929
+      dependencies:
+        - effect
+        - js-timers
+        - unsafe-reference
+        - web-html
+        - web-uievents
 packages:
   aff:
     type: registry
@@ -1121,23 +1188,12 @@ packages:
       - prelude
       - tuples
   bolson:
-    type: registry
-    version: 0.3.9
-    integrity: sha256-ueWO6q75KELeNAj3SOLmffKbuTmc8//gi9R/DHdHDLU=
+    type: git
+    url: https://github.com/mikesol/purescript-bolson.git
+    rev: d87900ceedfb81814bd282be464fa4c8a55677c2
     dependencies:
-      - control
-      - effect
       - fast-vect
-      - filterable
-      - foldable-traversable
-      - foreign-object
       - hyrule
-      - maybe
-      - prelude
-      - record
-      - st
-      - tuples
-      - unsafe-coerce
   catenable-lists:
     type: registry
     version: 7.0.0
@@ -1150,17 +1206,6 @@ packages:
       - prelude
       - tuples
       - unfoldable
-  colors:
-    type: registry
-    version: 7.0.1
-    integrity: sha256-udlg/y2PFsHYli8Tgz8BQGGrOjyGo0BcJj36IfgYADs=
-    dependencies:
-      - arrays
-      - integers
-      - lists
-      - numbers
-      - partial
-      - strings
   console:
     type: registry
     version: 6.1.0
@@ -1193,19 +1238,6 @@ packages:
     dependencies:
       - newtype
       - prelude
-  css:
-    type: registry
-    version: 6.0.0
-    integrity: sha256-zfSHxgiU4rSWuVxMjSKKh+s7j433wxmsr+CqI6hm9s4=
-    dependencies:
-      - colors
-      - console
-      - effect
-      - nonempty
-      - profunctor
-      - strings
-      - these
-      - transformers
   datetime:
     type: registry
     version: 6.1.0
@@ -1235,42 +1267,26 @@ packages:
       - functions
       - prelude
   deku:
-    type: registry
-    version: 0.9.23
-    integrity: sha256-lD4idKbvidgMx8cOfvvfHjRJyMc8Y0pTGVpZ0t4bb7M=
+    type: git
+    url: https://github.com/mikesol/purescript-deku.git
+    rev: 22d4756f831ac57c17286bae86a5799a0377239a
+    subdir: deku
     dependencies:
-      - aff
-      - arrays
       - bolson
-      - catenable-lists
-      - control
-      - css
-      - effect
-      - either
-      - fast-vect
-      - filterable
-      - foldable-traversable
-      - foreign-object
-      - free
-      - hyrule
-      - maybe
-      - newtype
-      - ordered-collections
-      - prelude
-      - profunctor
-      - quickcheck
-      - record
-      - safe-coerce
-      - st
-      - strings
-      - stringutils
-      - transformers
-      - tuples
-      - unsafe-coerce
-      - web-dom
-      - web-events
-      - web-html
-      - web-uievents
+  deku-core:
+    type: git
+    url: https://github.com/mikesol/purescript-deku.git
+    rev: 22d4756f831ac57c17286bae86a5799a0377239a
+    subdir: deku-core
+    dependencies:
+      - bolson
+  deku-dom:
+    type: git
+    url: https://github.com/mikesol/purescript-deku.git
+    rev: 22d4756f831ac57c17286bae86a5799a0377239a
+    subdir: deku-dom
+    dependencies:
+      - bolson
   distributive:
     type: registry
     version: 6.0.0
@@ -1516,33 +1532,13 @@ packages:
       - prelude
       - strings
   hyrule:
-    type: registry
-    version: 2.3.8
-    integrity: sha256-DPCeYX0bdqcxINNi1E4Pfu5ie3pdgfyPdVSKTX7IF4I=
+    type: git
+    url: https://github.com/mikesol/purescript-hyrule.git
+    rev: f388528a9aaa25a5307bf67f6ed12d2097620929
     dependencies:
-      - arrays
-      - control
-      - datetime
-      - debug
       - effect
-      - either
-      - filterable
-      - foldable-traversable
       - js-timers
-      - lists
-      - maybe
-      - newtype
-      - now
-      - ordered-collections
-      - partial
-      - prelude
-      - record
-      - refs
-      - st
-      - tuples
-      - unsafe-coerce
       - unsafe-reference
-      - web-events
       - web-html
       - web-uievents
   identity:
@@ -1602,17 +1598,6 @@ packages:
       - foldable-traversable
       - invariant
       - prelude
-  lcg:
-    type: registry
-    version: 4.0.0
-    integrity: sha256-h7ME5cthLfbgJOJdsZcSfFpwXsx4rf8YmhebU+3iSYg=
-    dependencies:
-      - effect
-      - integers
-      - maybe
-      - partial
-      - prelude
-      - random
   lists:
     type: registry
     version: 7.0.0
@@ -1842,52 +1827,6 @@ packages:
       - record
       - transformers
       - tuples
-  quickcheck:
-    type: registry
-    version: 8.0.1
-    integrity: sha256-ZvpccKQCvgslTXZCNmpYW4bUsFzhZd/kQUr2WmxFTGY=
-    dependencies:
-      - arrays
-      - console
-      - control
-      - effect
-      - either
-      - enums
-      - exceptions
-      - foldable-traversable
-      - gen
-      - identity
-      - integers
-      - lazy
-      - lcg
-      - lists
-      - maybe
-      - newtype
-      - nonempty
-      - numbers
-      - partial
-      - prelude
-      - record
-      - st
-      - strings
-      - tailrec
-      - transformers
-      - tuples
-      - unfoldable
-  quickcheck-laws:
-    type: registry
-    version: 7.0.0
-    integrity: sha256-rnzVTiDnymzYkvnhI8EvPwrmO8LgcTnrMTuiI172Tkc=
-    dependencies:
-      - enums
-      - quickcheck
-  random:
-    type: registry
-    version: 6.0.0
-    integrity: sha256-CJ611a35MPCE7XQMp0rdC6MCn76znlhisiCRgboAG+Q=
-    dependencies:
-      - effect
-      - integers
   record:
     type: registry
     version: 4.0.0
@@ -2018,17 +1957,6 @@ packages:
       - partial
       - prelude
       - refs
-  these:
-    type: registry
-    version: 6.0.0
-    integrity: sha256-6poQvFzGw7Ir9mTDEbFV9N6+cUeSHe0FdzTR2ZK1o6g=
-    dependencies:
-      - arrays
-      - gen
-      - lists
-      - quickcheck
-      - quickcheck-laws
-      - tuples
   transformers:
     type: registry
     version: 6.0.0
@@ -2142,6 +2070,16 @@ packages:
       - web-dom
       - web-file
       - web-storage
+  web-pointerevents:
+    type: registry
+    version: 2.0.0
+    integrity: sha256-uy1cI/Tck8Cf/MP0psvm2MLNxdijqfLZGLRq5FmuRh0=
+    dependencies:
+      - effect
+      - maybe
+      - prelude
+      - web-dom
+      - web-uievents
   web-storage:
     type: registry
     version: 5.0.0
@@ -2149,6 +2087,12 @@ packages:
     dependencies:
       - nullable
       - web-events
+  web-touchevents:
+    type: registry
+    version: 4.0.0
+    integrity: sha256-nDHMyXbkDfCEp299RLHCqj5HCDgWXFFy80lGoGjSzms=
+    dependencies:
+      - web-uievents
   web-uievents:
     type: registry
     version: 5.0.0
