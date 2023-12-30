@@ -54,7 +54,7 @@ component = Deku.do
     formMatter: fixed 
       [ Deku.do
         setName /\ name <- useState'
-        ref <- useRef "" name
+        ref <- useRef mempty name
         D.div_
           [ D.label_ 
               [ D.div_ [ D.text_ "Enter repository name:" ]
