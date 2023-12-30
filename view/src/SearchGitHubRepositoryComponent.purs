@@ -51,8 +51,8 @@ component = Deku.do
     searchRepositoryByName name = runReaderT (execute (GitHubRepositoryName name)) functions
   
   component_ ~~ { 
-    formMatter: fixed 
-      [ Deku.do
+    formMatter:  
+      Deku.do
         setName /\ name <- useState'
         ref <- useRef mempty name
         D.div_
@@ -69,9 +69,8 @@ component = Deku.do
                   [ D.text_ "Search" ]
               ]
           ]
-      ]
-    , result: fixed
-      [ repositories <#~> renderRepositories ]
+      
+    , result: repositories <#~> renderRepositories
   }
   where
   renderRepositories = case _ of
