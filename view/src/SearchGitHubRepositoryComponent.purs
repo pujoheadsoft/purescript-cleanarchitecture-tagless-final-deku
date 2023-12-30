@@ -30,10 +30,7 @@ import UseCase.SearchGitHubRepositoryUseCase (execute)
 component_ = Proxy :: Proxy """
 <div>
   <h1>Search GitHub Repository</h1>
-  <label>
-    <div>Enter repository name:</div>
-    ~form~
-  </label>
+  ~form~
   ~result~
 </div>
 """
@@ -57,18 +54,20 @@ component = Deku.do
     form: Deku.do
       setName /\ name <- useState'
       ref <- useRef mempty name
-      fixed
-        [ D.input
-            [ DA.xtypeText
-            , DA.value name
-            , DL.valueOn_ DL.change setName ]
-            []
+      fixed [
+        D.label_
+          [ D.div_ [ D.text_ "Enter repository name:" ]
+          , D.input
+              [ DA.xtypeText
+              , DA.value name
+              , DL.valueOn_ DL.change setName ]
+              []
+          ]
         , D.button
             [ DL.click_ \_ -> ref >>= searchRepositoryByName >>> launchAff_
             , DA.disabled $ isLoading <#> show ]
             [ D.text_ "Search" ]
-        ]
-      
+      ]
     , result: repositories <#~> renderRepositories
   }
   where
