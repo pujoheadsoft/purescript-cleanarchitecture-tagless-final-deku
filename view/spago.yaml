@@ -4,6 +4,7 @@ package:
   - deku
   - deku-core
   - deku-dom
+  - deku-css
   - web-pointerevents
   - web-touchevents
   - stringutils

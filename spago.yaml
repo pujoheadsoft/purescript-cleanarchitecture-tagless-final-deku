@@ -35,3 +35,7 @@ workspace:
       ref: "22d4756f831ac57c17286bae86a5799a0377239a"
       dependencies:
         - bolson
+    deku-css:
+      git: "https://github.com/mikesol/purescript-deku.git"
+      subdir: deku-css
+      ref: "22d4756f831ac57c17286bae86a5799a0377239a"
