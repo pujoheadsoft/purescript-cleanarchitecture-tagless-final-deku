@@ -4,45 +4,98 @@ import Prelude
 
 import Control.Alt ((<|>))
 import Controller.GitHubRepositoryController (searchRepositoryByName)
-import Data.Foldable (for_, traverse_)
+import Data.Either (Either(..))
+import Data.Foldable (for_, oneOfMap, traverse_)
 import Data.Maybe (Maybe(..))
 import Data.String (Pattern(..), Replacement(..), replaceAll)
 import Data.Tuple.Nested ((/\))
 import Deku.Control (text_)
-import Deku.Core (Nut(..))
+import Deku.Core (Nut(..), dyn, fixed)
 import Deku.DOM as D
 import Deku.DOM.Attributes as DA
 import Deku.DOM.Listeners as DL
 import Deku.DOM.Self as Self
 import Deku.Do as Deku
-import Deku.Hooks (useDynAtBeginning, useRef, useState, useState')
+import Deku.Hooks (useDynAtBeginning, useRef, useState, useState', (<#~>))
+import Deku.Pursx ((~~))
 import Deku.Toplevel (runInBody')
 import Effect (Effect)
+import FRP.Event (Event)
+import FRP.Poll (APoll)
+import FRP.Poll as P
+import State.SearchGitHubRepositoryState (ErrorMessage, SearchGitHubRepositoryState, GitHubRepositories)
+import Type.Proxy (Proxy(..))
 import Web.Event.Event (target)
 import Web.HTML (window)
 import Web.HTML.HTMLInputElement (fromEventTarget, value)
 import Web.HTML.Window (alert)
 import Web.UIEvent.KeyboardEvent (code, toEvent)
 
-component :: Nut
-component = Deku.do
-  setInput /\ input <- useState'
-  D.form_
-    [ D.h1_ [ text_ "Search GitHub Repository" ]
-    , D.label_
-        [ D.div_ [ D.text_ "Enter repository name:" ]
-        , D.input
-            [ DA.value_ ""
-            , Self.selfT_ setInput
-            ]
-            []
-        ]
-    , D.button
-        [ DL.runOn DL.click $ (input <|> pure "") <#> setInput
-        ]
-        [ D.text_ "Search" ]
---    , renderRepositories state.repositories
+--   HH.form
+--     [ HE.onSubmit SearchRepository ]
+--     [ HH.h1_ [ HH.text "Search GitHub Repository" ]
+--     , HH.label_
+--         [ HH.div_ [ HH.text "Enter repository name:" ]
+--         , HH.input
+--             [ HP.value state.searchRepositoryName
+--             , HE.onValueInput SetSearchRepositoryName
+--             ]
+--         ]
+--     , HH.button
+--         [ HP.disabled $ state.isLoading
+--         , HP.type_ HP.ButtonSubmit
+--         ]
+--         [ HH.text "Search" ]
+--     , renderRepositories state.repositories
+--     ]
+component_ = Proxy :: Proxy """
+<form>
+  <h1>Search GitHub Repository</h1>
+  ~formMatter~
+  ~result~
+</form>
+"""
+
+component
+  :: (APoll Event (Either ErrorMessage GitHubRepositories))
+  -> (APoll Event Boolean)
+  -> (String -> Effect Unit)
+  -> Nut
+component repositories isLoading onChangeName = component_ ~~
+  { formMatter: fixed 
+    [ Deku.do
+        setName /\ name <- useState ""
+        ref <- useRef "" name
+        D.label_ 
+          [ D.div_ [ D.text_ "Enter repository name:" ]
+          , D.input
+              [ DA.xtypeText
+              , DA.value name
+              , DL.valueOn_ DL.change setName ]
+              []
+          , D.button
+              [ DL.click_ \_ -> ref >>= onChangeName ]
+              [ D.text_ "Search" ]
+          ]
+        
     ]
+  , result: fixed
+    [ repositories <#~> renderRepositories ]
+  }
+  where
+  renderRepositories = case _ of
+    Left err ->
+      D.div_ [ D.text_ err ] -- $ "Failed loading repositories: " <>
+    Right r ->
+      D.div_ (renderRepository <$> r)
+
+  renderRepository repository =
+    D.div
+      [  ] 
+      [ D.div [] [D.text_ repository.owner]
+      , D.div [] [D.a [DA.href_ repository.url ] [ D.text_ repository.name ]]
+      , D.div [] [D.text_ repository.updateDate]
+      ]
 
 -- render :: forall m. SearchGitHubRepositoryState -> H.ComponentHTML Action () m
 -- render state =
