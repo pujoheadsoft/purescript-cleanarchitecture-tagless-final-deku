@@ -60,12 +60,14 @@ component = Deku.do
           , D.input
               [ DA.xtypeText
               , DA.value name
-              , DL.valueOn_ DL.change setName ]
+              , DL.valueOn_ DL.change setName
+              ]
               []
           ]
         , D.button
-            [ DL.click_ \_ -> ref >>= searchRepositoryByName >>> launchAff_
-            , DA.disabled $ isLoading <#> show ]
+            [ DA.disabled $ isLoading <#> show
+            , DL.click_ \_ -> ref >>= searchRepositoryByName >>> launchAff_
+            ]
             [ D.text_ "Search" ]
       ]
     , result: repositories <#~> renderRepositories
