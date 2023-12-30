@@ -15,7 +15,7 @@ import Deku.DOM as D
 import Deku.DOM.Attributes as DA
 import Deku.DOM.Listeners as DL
 import Deku.Do as Deku
-import Deku.Hooks (useRef, useState, useState', (<#~>))
+import Deku.Hooks (useRef, useState', (<#~>))
 import Deku.Pursx ((~~))
 import Domain.GitHubRepository (GitHubRepositoryName(..))
 import Driver.GitHubApiDriver (gitHubRepositoryGatewayPortFunction)
@@ -53,7 +53,7 @@ component = Deku.do
   component_ ~~ { 
     formMatter: fixed 
       [ Deku.do
-        setName /\ name <- useState ""
+        setName /\ name <- useState'
         ref <- useRef "" name
         D.div_
           [ D.label_ 
