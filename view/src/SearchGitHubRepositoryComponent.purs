@@ -2,35 +2,25 @@ module SearchGitHubRepositoryComponent where
 
 import Prelude
 
-import Control.Alt ((<|>))
-import Controller.GitHubRepositoryController (searchRepositoryByName)
+import Control.Monad.Reader (runReaderT)
 import Data.Either (Either(..))
-import Data.Foldable (for_, oneOfMap, traverse_)
-import Data.Maybe (Maybe(..))
-import Data.String (Pattern(..), Replacement(..), replaceAll)
 import Data.Tuple.Nested ((/\))
-import Deku.Control (text_)
-import Deku.Core (Nut(..), dyn, fixed)
+import Deku.Core (Nut, fixed)
 import Deku.DOM as D
 import Deku.DOM.Attributes as DA
 import Deku.DOM.Listeners as DL
-import Deku.DOM.Self as Self
 import Deku.Do as Deku
-import Deku.Hooks (useDynAtBeginning, useRef, useState, useState', (<#~>))
+import Deku.Hooks (useRef, useState, useState', (<#~>))
 import Deku.Pursx ((~~))
-import Deku.Toplevel (runInBody')
-import Effect (Effect)
-import FRP.Event (Event)
-import FRP.Poll (APoll)
-import FRP.Poll as P
-import Network.RemoteData (isLoading)
-import State.SearchGitHubRepositoryState (ErrorMessage, SearchGitHubRepositoryState, GitHubRepositories)
+import Domain.GitHubRepository (GitHubRepositoryName(..))
+import Driver.GitHubApiDriver (gitHubRepositoryGatewayPortFunction)
+import Effect.Aff (launchAff_)
+import Effect.Class (liftEffect)
+import Gateway.GitHubRepositoryGateway (gitHubRepositoryPortFunction)
+import Presenter.GitHubRepositoryPresenter (gitHubRepositoryPresenterPortFunction)
+import Record.Builder (build, merge)
 import Type.Proxy (Proxy(..))
-import Web.Event.Event (target)
-import Web.HTML (window)
-import Web.HTML.HTMLInputElement (fromEventTarget, value)
-import Web.HTML.Window (alert)
-import Web.UIEvent.KeyboardEvent (code, toEvent)
+import UseCase.SearchGitHubRepositoryUseCase (execute)
 
 --   HH.form
 --     [ HE.onSubmit SearchRepository ]
@@ -57,14 +47,25 @@ component_ = Proxy :: Proxy """
 </div>
 """
 
-component
-  :: (APoll Event (Either ErrorMessage GitHubRepositories))
-  -> (APoll Event Boolean)
-  -> (String -> Effect Unit)
-  -> Nut
-component repositories isLoading onChangeName = component_ ~~
-  { formMatter: fixed 
-    [ Deku.do
+component :: Nut
+component = Deku.do 
+  setRepositories /\ repositories <- useState'
+  setLoading /\ isLoading <- useState'
+
+  let
+    gf = gitHubRepositoryPortFunction gitHubRepositoryGatewayPortFunction
+    pf = gitHubRepositoryPresenterPortFunction {
+      setRepositories: \r -> liftEffect $ setRepositories (Right r),
+      setLoading: \loading -> liftEffect $ setLoading loading,
+      setErrorMessage: \m -> liftEffect $ setRepositories (Left m)
+    } 
+    functions = build (merge (gf)) pf
+
+    searchRepositoryByName name = runReaderT (execute (GitHubRepositoryName name)) functions
+  
+  component_ ~~ { 
+    formMatter: fixed 
+      [ Deku.do
         setName /\ name <- useState ""
         ref <- useRef "" name
         D.div_
@@ -76,14 +77,14 @@ component repositories isLoading onChangeName = component_ ~~
                   , DL.valueOn_ DL.change setName ]
                   []
               , D.button
-                  [ DL.click_ \_ -> ref >>= onChangeName
+                  [ DL.click_ \_ -> ref >>= searchRepositoryByName >>> launchAff_
                   , DA.disabled $ isLoading <#> show ]
                   [ D.text_ "Search" ]
               ]
           ]
-    ]
-  , result: fixed
-    [ repositories <#~> renderRepositories ]
+      ]
+    , result: fixed
+      [ repositories <#~> renderRepositories ]
   }
   where
   renderRepositories = case _ of
@@ -152,20 +153,20 @@ component repositories isLoading onChangeName = component_ ~~
 
 
 
---   styleOwner = CSS.style do
---     width $ px 150.0
---     overflow hidden
---     textWhitespace whitespaceNoWrap
---     textOverflow ellipsis
+-- styleOwner = CSS.style do
+--   width $ px 150.0
+--   overflow hidden
+--   textWhitespace whitespaceNoWrap
+--   textOverflow ellipsis
 
---   styleUrl = CSS.style do
---     width $ px 350.0
---     overflow hidden
---     textWhitespace whitespaceNoWrap
---     textOverflow ellipsis
+-- styleUrl = CSS.style do
+--   width $ px 350.0
+--   overflow hidden
+--   textWhitespace whitespaceNoWrap
+--   textOverflow ellipsis
 
---   styleUpdateDate = CSS.style do 
---     width $ px 100.0
+-- styleUpdateDate = CSS.style do 
+--   width $ px 100.0
 
 -- handleAction :: forall o m. MonadAff m => Action -> H.HalogenM SearchGitHubRepositoryState Action () o m Unit
 -- handleAction = case _ of

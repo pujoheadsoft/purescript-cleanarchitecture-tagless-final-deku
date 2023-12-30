@@ -1,7 +1,6 @@
 package:
   name: view
   dependencies:
-  - controllers
   - deku
   - deku-core
   - deku-dom
