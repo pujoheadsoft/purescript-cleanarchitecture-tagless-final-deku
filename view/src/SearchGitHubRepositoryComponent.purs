@@ -23,6 +23,7 @@ import Effect (Effect)
 import FRP.Event (Event)
 import FRP.Poll (APoll)
 import FRP.Poll as P
+import Network.RemoteData (isLoading)
 import State.SearchGitHubRepositoryState (ErrorMessage, SearchGitHubRepositoryState, GitHubRepositories)
 import Type.Proxy (Proxy(..))
 import Web.Event.Event (target)
@@ -49,11 +50,11 @@ import Web.UIEvent.KeyboardEvent (code, toEvent)
 --     , renderRepositories state.repositories
 --     ]
 component_ = Proxy :: Proxy """
-<form>
+<div>
   <h1>Search GitHub Repository</h1>
   ~formMatter~
   ~result~
-</form>
+</div>
 """
 
 component
@@ -66,18 +67,20 @@ component repositories isLoading onChangeName = component_ ~~
     [ Deku.do
         setName /\ name <- useState ""
         ref <- useRef "" name
-        D.label_ 
-          [ D.div_ [ D.text_ "Enter repository name:" ]
-          , D.input
-              [ DA.xtypeText
-              , DA.value name
-              , DL.valueOn_ DL.change setName ]
-              []
-          , D.button
-              [ DL.click_ \_ -> ref >>= onChangeName ]
-              [ D.text_ "Search" ]
+        D.div_
+          [ D.label_ 
+              [ D.div_ [ D.text_ "Enter repository name:" ]
+              , D.input
+                  [ DA.xtypeText
+                  , DA.value name
+                  , DL.valueOn_ DL.change setName ]
+                  []
+              , D.button
+                  [ DL.click_ \_ -> ref >>= onChangeName
+                  , DA.disabled $ isLoading <#> show ]
+                  [ D.text_ "Search" ]
+              ]
           ]
-        
     ]
   , result: fixed
     [ repositories <#~> renderRepositories ]
