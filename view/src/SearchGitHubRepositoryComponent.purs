@@ -32,7 +32,7 @@ component_ = Proxy :: Proxy """
   <h1>Search GitHub Repository</h1>
   <label>
     <div>Enter repository name:</div>
-    ~formMatter~
+    ~form~
   </label>
   ~result~
 </div>
@@ -54,7 +54,7 @@ component = Deku.do
     searchRepositoryByName name = runReaderT (execute (GitHubRepositoryName name)) functions
   
   component_ ~~ { 
-    formMatter: Deku.do
+    form: Deku.do
       setName /\ name <- useState'
       ref <- useRef mempty name
       fixed
